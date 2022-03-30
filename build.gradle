@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+}
+
+group 'fr.pierrezemb'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.apache.calcite:calcite-core:1.30.0'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
