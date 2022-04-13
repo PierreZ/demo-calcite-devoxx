@@ -18,6 +18,7 @@ import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.schema.SchemaPlus;
@@ -39,6 +40,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+
 
 public class DemoQueryProcessing {
     public static final List<Object[]> BOOK_DATA = Arrays.asList(
@@ -77,7 +79,7 @@ public class DemoQueryProcessing {
         // Create an SQL parser
         // Query example:
         SqlParser parser = SqlParser.create("SELECT * FROM books");
-        // SqlParser parser = SqlParser.create("SELECT * FROM books WHERE id > 2");
+        // SqlParser parser = SqlParser.create("SELECT * FROM books WHERE id = 2");
         // SqlParser parser = SqlParser.create("SELECT DISTINCT author FROM books");
         // SqlParser parser = SqlParser.create("SELECT Count(publish_year) FROM books WHERE publish_year BETWEEN 1800 AND 1850");
         // SqlParser parser = SqlParser.create("SELECT * FROM books WHERE author LIKE 'Victor%'");
@@ -121,6 +123,9 @@ public class DemoQueryProcessing {
 //            planner.addRule(rule);
 //        }
 
+        // allow pushdown filters
+//        planner.addRule(CoreRules.FILTER_SCAN);
+
         // Define the type of the output plan (in this case we want a physical plan inBindableConvention)
 //        logicalPlan = planner.changeTraits(logicalPlan,
 //                cluster.traitSet().replace(BindableConvention.INSTANCE));
@@ -134,15 +139,15 @@ public class DemoQueryProcessing {
 //        System.out.println(
 //                RelOptUtil.dumpPlan("[Physical plan]", physicalPlan, SqlExplainFormat.TEXT,
 //                        SqlExplainLevel.NON_COST_ATTRIBUTES));
-//
-//        System.out.println("Results:");
+
+        System.out.println("Results:");
         // Run the executable plan using a context simply providing access to the schema
 //        for (Object[] row : physicalPlan.bind(new SchemaOnlyDataContext(schema))) {
 //            System.out.println(Arrays.toString(row));
 //        }
     }
 
-    private ListTable createBookTable() {
+    private Table createBookTable() {
         RelDataTypeFactory.Builder bookType = new RelDataTypeFactory.Builder(typeFactory);
         bookType.add("id", SqlTypeName.INTEGER);
         bookType.add("title", SqlTypeName.VARCHAR);
@@ -150,6 +155,7 @@ public class DemoQueryProcessing {
         bookType.add("author", SqlTypeName.VARCHAR);
         // Initialize books table with data
         return new ListTable(bookType.build(), BOOK_DATA);
+        // return new MapTable(bookType.build(), BOOK_DATA);
     }
 
     /**

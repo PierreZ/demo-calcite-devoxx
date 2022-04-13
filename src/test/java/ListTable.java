@@ -22,6 +22,7 @@ class ListTable extends AbstractTable implements ScannableTable {
 
     @Override
     public Enumerable<Object[]> scan(final DataContext root) {
+        System.out.printf("returning %d books%n", data.size());
         return Linq4j.asEnumerable(data);
     }
 
